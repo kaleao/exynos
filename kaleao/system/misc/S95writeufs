@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Writes the UFS
+#
+
+
+cd /ufs
+device0="/dev/sda"
+
+if [ -b "$device0" ]; then
+   echo "dev exists"
+   dd if=/dev/zero of=test2 count=10000
+   dd if=test2 of=/dev/sda count=10000
+   dd if=/dev/sda of=test count=10000
+   val="$(sha1sum test | awk '{print $1;}')"
+   val2="$(sha1sum test2  | awk '{print $1;}')"
+   val3=`echo $val`
+   val4=`echo $val2`
+   if [ $val3 == $val4 ]; then
+         su -c ./write_ufs_unsecure_128GB.sh
+         dmesg |grep "NOP OUT failed" > /root/aa
+         FILE="/root/aa"
+         if [[ -s $FILE ]] ; then
+                echo "UFS ERROR"
+	 else
+                echo "UFS READY"
+                echo 1 > /sys/class/gpio/export
+                echo out > /sys/class/gpio/gpio1/direction
+                echo 1 > /sys/class/gpio/gpio1/value
+                echo 106 > /sys/class/gpio/export
+                echo 108 > /sys/class/gpio/export
+                echo high > /sys/class/gpio/gpio106/direction
+                echo high > /sys/class/gpio/gpio108/direction
+	fi
+   fi
+fi

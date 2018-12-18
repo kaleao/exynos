@@ -1,0 +1,221 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          exynosnet
+# Required-Start:    
+# Required-Stop:      
+# Default-Start:     2 4 5
+# Default-Stop:      0 6
+# Short-Description: Raise Exynos 10Gbps interfaces..
+# Description:       Load kgex.ko driver with jumbo=1.w
+### END INIT INFO
+
+start() {
+	
+	grep -i ubuntu /etc/lsb-release &>/dev/null && UBUNTU_ROOTFS=1 || UBUNTU_ROOTFS=0
+	[ -e /etc/centos-release ] && CENTOS_ROOTFS=1 || CENTOS_ROOTFS=0
+
+	# Make sure no net interface renaming happens
+	if [ "$UBUNTU_ROOTFS" = 1 ]; then
+		rm -f /etc/udev/rules.d/80-net-setup-link.rules
+		sync
+		ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
+	fi
+	if [ "$CENTOS_ROOTFS" = 1 ]; then
+		if [ -f /etc/kaleao_first_boot ]; then
+			rm /etc/kaleao_first_boot
+			rm -f /etc/dhcp/dhclient-enter-hooks.d/kmax_set_update_repo
+			localectl set-locale LANG=en_US.utf8
+		fi
+
+		rm -f /etc/udev/rules.d/80-net-name-slot.rules
+		sync
+		ln -s /dev/null /etc/udev/rules.d/80-net-name-slot.rules
+	fi
+	sync
+	udevadm control --reload-rules
+	sync
+	
+	# Debug stuff (printing, kdb)
+	#echo 8 > /proc/sys/kernel/printk
+        #echo "ttyS0,115200" > /sys/module/kgdboc/parameters/kgdboc
+	
+	# Configure cgroups
+	# Big cores
+	mkdir /sys/fs/cgroup/cpuset/bigcores
+        echo 0 > /sys/fs/cgroup/cpuset/bigcores/cpuset.mems
+        echo 4-7 > /sys/fs/cgroup/cpuset/bigcores/cpuset.cpus
+
+	# Little cores
+        mkdir /sys/fs/cgroup/cpuset/littlecores
+        echo 0 > /sys/fs/cgroup/cpuset/littlecores/cpuset.mems
+        echo 0-3 > /sys/fs/cgroup/cpuset/littlecores/cpuset.cpus
+
+	# Move task with pid 1 (init) to the bigcores cgroup
+        echo 1 > /sys/fs/cgroup/cpuset/bigcores/tasks
+
+	# Setting journalctl to persistent storage
+	if [ -f "/etc/systemd/journald.conf" ]; then
+		if [ ! -d /var/log/journal ]; then
+			echo "Creating journald temp files"
+			systemd-tmpfiles --create --prefix /var/log/journal
+			systemctl restart systemd-journald
+		fi
+	fi
+	
+	# Load network driver
+	echo "Loading 10gbps driver..."
+	insmod /root/drivers/kgex.ko	
+	RES=`dmesg | grep "eth0 initialized"`
+        if [ "$RES" = "" ]; then
+                echo "Cannot load PCI driver (probably SD emu design)"
+                return
+        fi
+
+	# Load power management driver (disable unused regulators)
+	echo "Loading PMU configuration driver..."
+	insmod /root/drivers/kmax_pmu.ko
+
+	# Disable IPv6
+	sysctl -w net.ipv6.conf.all.disable_ipv6=1
+	sysctl -w net.ipv6.conf.default.disable_ipv6=1
+	
+	# Configure ARP settings
+	sysctl -w net.ipv4.conf.all.arp_announce=2
+	sysctl -w net.ipv4.conf.all.arp_ignore=2
+
+	# Set npu reviver jiffies
+	echo 100 > /proc/kgex/dma0/reviver
+	
+	ifconfig eth0 up
+
+	# Configure npu network (and dependent) interfaces
+	echo "Configuring NIC A..."
+	nic_a_mac=`cat /proc/kgex/conf/mac_a_addr`
+	while [ "$nic_a_mac" = "FF:FF:FF:FF:FF:FF" ]; do
+		nic_a_mac=`cat /proc/kgex/conf/mac_a_addr`
+	done
+	ifconfig eth0 hw ether $nic_a_mac
+	
+	echo "Configuring NIC mng..."
+	nic_mng_mac=`cat /proc/kgex/conf/mac_mng_addr`
+        while [ "$nic_mng_mac" = "FF:FF:FF:FF:FF:FF" ]; do
+                nic_mng_mac=`cat /proc/kgex/conf/mac_mng_addr`
+        done
+	ip link add mng0 link eth0 type macvlan mode private
+	ifconfig mng0 hw ether $nic_mng_mac		
+
+	# Configure spu network interface
+	FOUND=`grep "stg0" /proc/net/dev`
+	OIFS=$IFS
+	IFS=':'	
+	for x in `cat /proc/kgex/conf/mac_mng_addr`
+	do
+	    mac_last=$x
+	done
+	IFS=$OIFS
+
+	# Check is SSD is present
+	SSD_STATUS=$(cat /proc/kgex/conf/ssd_status)
+	if [ $SSD_STATUS != 6 ]; then
+		echo 'No SSD drive...'
+		NFS_FOUND=0
+	else
+		NFS_FOUND=1
+	fi
+	if [ -n "$FOUND" ]; then
+		echo "Configuring stg0 interface..."
+		ifconfig stg0 up
+		nic_stg_mac=`cat /proc/kgex/conf/mac_stg_addr`
+	        while [ "$nic_stg_mac" = "FF:FF:FF:FF:FF:FF" ]; do
+        	        nic_stg_mac=`cat /proc/kgex/conf/mac_stg_addr`
+        	done
+
+		ifconfig stg0 hw ether $nic_stg_mac
+		#ifconfig stg0 "192.168.10.$(($((0x$((0x$mac_last & 0x0F)))) + 100))"		
+	fi
+
+	# Fix sshd keys if not present
+	if [ -f /etc/ssh/ssh_host_rsa_key ]; then
+	        echo "OK"
+	else
+        	ssh-keygen -A
+	fi
+	
+	# Various ubuntu config
+	if [ "$UBUNTU_ROOTFS" = 1 ]; then
+		rm -f /var/lib/dpkg/lock
+	fi
+	
+	#/root/util/netmng.py &
+	
+	# Start power manager service
+	/root/util/powermng.py &
+	
+	# Start dhcp clients
+	if [ "`which dhclient`" = "" ]; then
+		nohup udhcpc -i mng0 -O wins &
+		nohup udhcpc -i eth0 &
+
+	else
+		mkdir -p /etc/opkg
+		if [ "$UBUNTU_ROOTFS" = 1 ]; then
+			rm -f /var/lib/dhcp/dhclient.*
+		fi
+		if [ "$CENTOS_ROOTFS" = 1 ]; then
+			rm -f /var/lib/dhclient/dhclient.*
+		fi
+		sync
+		dhclient -r mng0 eth0
+		nohup dhclient mng0 eth0 &
+	fi
+
+	# Set npu network irq affinity
+	echo 80 > /proc/irq/16/smp_affinity
+	if [ -n "$FOUND" ]; then
+
+		# Set spu irq afinity
+		echo 20 > /proc/irq/15/smp_affinity
+		
+		# Set spu reviver jiffies
+		echo 100 > /proc/kgex/dma1/reviver
+	fi
+	
+	# Set performance governor and scaling frequency for LITTLE cores (0-3)
+	echo 1500000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq
+	echo performance > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
+
+	# Inform npu for and of boot
+	echo 106 > /sys/class/gpio/export
+	echo 108 > /sys/class/gpio/export
+	echo high > /sys/class/gpio/gpio106/direction	
+	echo high > /sys/class/gpio/gpio108/direction
+	
+	# do not try mount nfs in recovery
+	cat /proc/device-tree/chosen/bootargs | grep -q 'root=/dev/sda2' && NFS_FOUND=666
+
+	# Mount spu SSD via NFS
+	if [ "$NFS_FOUND" = 1 ]; then
+		dpkg -l | grep -q nfs-common
+		if [ $? = 0 ]; then
+			echo 'Mounting nfs...'
+			mkdir -p /mnt/storage
+			touch /mnt/storage/THIS_IS_NOT_NFS
+			mount -t nfs -o vers=3 192.168.10.104:/srv/nfs/exynos_shared /mnt/storage/ &
+		else
+			echo 'Nfs-common is not installed'
+		fi
+	else
+		rmdir /mnt/storage
+	fi
+
+
+}
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	echo "Shutting down..."
+    ;;
+esac
+exit 0

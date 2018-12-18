@@ -1,0 +1,5 @@
+config BR2_PACKAGE_KALEAO_KNET
+        bool "kaleao-knet"
+        help
+          Installation of Kmax 10Gbps multi-port driver for Exynos
+

@@ -1,0 +1,4 @@
+menu "Testing apps"
+	source "package/kaleao/testing/Config.in"
+  
+endmenu

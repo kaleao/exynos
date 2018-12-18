@@ -1,0 +1,21 @@
+#
+# Script fragment to make dhclient to supply update server IP
+#
+
+case "$reason" in
+  BOUND|RENEW|REBIND)
+	echo "Found update servers: $new_netbios_name_servers"
+	
+	sed '/kaleao/d' /etc/apt/sources.list > /etc/apt/tmp.sources.list
+	
+	mv /etc/apt/tmp.sources.list /etc/apt/sources.list
+	
+	for i in $new_netbios_name_servers;
+	do
+		echo "deb http://$i/kaleao/exynos/ubuntu/ kmax/" >> /etc/apt/sources.list
+	done
+
+	;;
+  EXPIRE|FAIL|RELEASE|STOP)
+	;;
+	esac

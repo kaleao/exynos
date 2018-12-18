@@ -1,0 +1,17 @@
+PKG_NAME="kmax-kernel"
+PKG_VERSION="0.8.5"
+PKG_MAINTAINER="Kaleao System SW Team <kaleao@kaleao.com>"
+PKG_DESC="KMAX Compute Node kernel"
+
+SRC_FILES=(
+"./kaleao/system/rootfs_overlay/ufs/Image_noramfs"
+"./kaleao/drivers/*/*.ko"
+"./ubuntu/kmax-revb-ubuntu.dtb"
+)
+
+DST_FILES=(
+"kaleao/$PKG_NAME/Image"
+"kaleao/$PKG_NAME/drivers/."
+"kaleao/$PKG_NAME/."
+)
+

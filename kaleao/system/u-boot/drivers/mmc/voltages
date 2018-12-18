@@ -1,0 +1,492 @@
+mmc.c:	ret = mmc->send_cmd(mmc, cmd, data);
+mmc.c:	ret = mmc->send_cmd(mmc, cmd, data);
+mmc.c:		cmd.cmdarg = mmc->rca << 16;
+mmc.c:	if (mmc->high_capacity)
+mmc.c:		end = (start + blkcnt - 1) * mmc->write_bl_len;
+mmc.c:		start *= mmc->write_bl_len;
+mmc.c:		if (mmc->sec_feature_support & EXT_CSD_SEC_SANITIZE)
+mmc.c:	if ((start % mmc->erase_grp_size) || (blkcnt % mmc->erase_grp_size))
+mmc.c:		       mmc->erase_grp_size, start & ~(mmc->erase_grp_size - 1),
+mmc.c:		       ((start + blkcnt + mmc->erase_grp_size)
+mmc.c:			& ~(mmc->erase_grp_size - 1)) - 1);
+mmc.c:	if (!IS_SD(mmc) && start == 0 && ((mmc->capacity / mmc->write_bl_len) / 2) < blkcnt) {
+mmc.c:		if (mmc->sec_feature_support & EXT_CSD_SEC_SANITIZE)
+mmc.c:		blk_r = ((blkcnt - blk) > mmc->erase_grp_size) ?
+mmc.c:		    mmc->erase_grp_size : (blkcnt - blk);
+mmc.c:	if (sec && mmc->sec_feature_support & EXT_CSD_SEC_SANITIZE) {
+mmc.c:	if ((start + blkcnt) > mmc->block_dev.lba) {
+mmc.c:		       start + blkcnt, mmc->block_dev.lba);
+mmc.c:	if (mmc->high_capacity)
+mmc.c:		cmd.cmdarg = start * mmc->write_bl_len;
+mmc.c:	data.blocksize = mmc->write_bl_len;
+mmc.c:		cur = (blocks_todo > mmc->b_max) ? mmc->b_max : blocks_todo;
+mmc.c:		src += cur * mmc->write_bl_len;
+mmc.c:	if (mmc->high_capacity)
+mmc.c:		cmd.cmdarg = start * mmc->read_bl_len;
+mmc.c:	data.blocksize = mmc->read_bl_len;
+mmc.c:	if ((start + blkcnt) > mmc->block_dev.lba) {
+mmc.c:		       start + blkcnt, mmc->block_dev.lba);
+mmc.c:		cur = (blocks_todo > mmc->b_max) ? mmc->b_max : blocks_todo;
+mmc.c:		dst += cur * mmc->read_bl_len;
+mmc.c:		cmd.cmdarg = mmc_host_is_spi(mmc) ? 0 : (mmc->voltages & 0xff8000);
+mmc.c:		if (mmc->version == SD_VERSION_2)
+mmc.c:	if (mmc->version != SD_VERSION_2)
+mmc.c:		mmc->version = SD_VERSION_1_0;
+mmc.c:	mmc->ocr = cmd.response[0];
+mmc.c:	mmc->high_capacity = ((mmc->ocr & OCR_HCS) == OCR_HCS);
+mmc.c:	mmc->rca = 0;
+mmc.c:			      (mmc->voltages &
+mmc.c:		if (mmc->host_caps & MMC_MODE_HC)
+mmc.c:	mmc->version = MMC_VERSION_UNKNOWN;
+mmc.c:	mmc->ocr = cmd.response[0];
+mmc.c:	mmc->high_capacity = ((mmc->ocr & OCR_HCS) == OCR_HCS);
+mmc.c:	mmc->rca = 0;
+mmc.c:	mmc->card_caps = 0;
+mmc.c:	if (mmc->version < MMC_VERSION_4)
+mmc.c:		mmc->card_caps |= MMC_MODE_HS_52MHz | MMC_MODE_HS | MMC_MODE_DDR;
+mmc.c:		mmc->card_caps |= MMC_MODE_HS_52MHz | MMC_MODE_HS;
+mmc.c:		mmc->card_caps |= MMC_MODE_HS;
+mmc.c:			  (mmc->part_config & ~PART_ACCESS_MASK)
+mmc.c:	if ((cd < 0) && mmc->getcd)
+mmc.c:		cd = mmc->getcd(mmc);
+mmc.c:	mmc->card_caps = 0;
+mmc.c:	cmd.cmdarg = mmc->rca << 16;
+mmc.c:	mmc->scr[0] = __be32_to_cpu(scr[0]);
+mmc.c:	mmc->scr[1] = __be32_to_cpu(scr[1]);
+mmc.c:	switch ((mmc->scr[0] >> 24) & 0xf) {
+mmc.c:		mmc->version = SD_VERSION_1_0;
+mmc.c:		mmc->version = SD_VERSION_1_10;
+mmc.c:		mmc->version = SD_VERSION_2;
+mmc.c:		mmc->version = SD_VERSION_1_0;
+mmc.c:	if (mmc->scr[0] & SD_DATA_4BIT)
+mmc.c:		mmc->card_caps |= MMC_MODE_4BIT;
+mmc.c:	if (mmc->version == SD_VERSION_1_0)
+mmc.c:	if (!((mmc->host_caps & MMC_MODE_HS_52MHz) && (mmc->host_caps & MMC_MODE_HS)))
+mmc.c:		mmc->card_caps |= MMC_MODE_HS;
+mmc.c:	mmc->set_ios(mmc);
+mmc.c:	if (clock > mmc->f_max)
+mmc.c:		clock = mmc->f_max;
+mmc.c:	if (clock < mmc->f_min)
+mmc.c:		clock = mmc->f_min;
+mmc.c:	mmc->clock = clock;
+mmc.c:	mmc->bus_width = width;
+mmc.c:	memcpy(mmc->cid, cmd.response, 16);
+mmc.c:		cmd.cmdarg = mmc->rca << 16;
+mmc.c:			mmc->rca = (cmd.response[0] >> 16) & 0xffff;
+mmc.c:	cmd.cmdarg = mmc->rca << 16;
+mmc.c:	mmc->csd[0] = cmd.response[0];
+mmc.c:	mmc->csd[1] = cmd.response[1];
+mmc.c:	mmc->csd[2] = cmd.response[2];
+mmc.c:	mmc->csd[3] = cmd.response[3];
+mmc.c:	if (mmc->version == MMC_VERSION_UNKNOWN) {
+mmc.c:			mmc->version = MMC_VERSION_1_2;
+mmc.c:			mmc->version = MMC_VERSION_1_4;
+mmc.c:			mmc->version = MMC_VERSION_2_2;
+mmc.c:			mmc->version = MMC_VERSION_3;
+mmc.c:			mmc->version = MMC_VERSION_4;
+mmc.c:			mmc->version = MMC_VERSION_1_2;
+mmc.c:	mmc->tran_speed = freq * mult;
+mmc.c:	mmc->read_bl_len = 1 << ((cmd.response[1] >> 16) & 0xf);
+mmc.c:		mmc->write_bl_len = mmc->read_bl_len;
+mmc.c:		mmc->write_bl_len = 1 << ((cmd.response[3] >> 22) & 0xf);
+mmc.c:	if (mmc->high_capacity) {
+mmc.c:		csize = (mmc->csd[1] & 0x3f) << 16 | (mmc->csd[2] & 0xffff0000) >> 16;
+mmc.c:		csize = (mmc->csd[1] & 0x3ff) << 2 | (mmc->csd[2] & 0xc0000000) >> 30;
+mmc.c:		cmult = (mmc->csd[2] & 0x00038000) >> 15;
+mmc.c:	mmc->capacity = (csize + 1) << (cmult + 2);
+mmc.c:	mmc->capacity *= mmc->read_bl_len;
+mmc.c:	if (mmc->read_bl_len > 512)
+mmc.c:		mmc->read_bl_len = 512;
+mmc.c:	if (mmc->write_bl_len > 512)
+mmc.c:		mmc->write_bl_len = 512;
+mmc.c:		cmd.cmdarg = mmc->rca << 16;
+mmc.c:	mmc->erase_grp_size = 1;
+mmc.c:	mmc->part_config = MMCPART_NOAVAILABLE;
+mmc.c:	if (!IS_SD(mmc) && (mmc->version >= MMC_VERSION_4)) {
+mmc.c:				mmc->capacity = capacity;
+mmc.c:		mmc->sec_feature_support = ext_csd[EXT_CSD_SEC_FEATURE_SUPPORT];
+mmc.c:			mmc->erase_grp_size = ext_csd[EXT_CSD_HC_ERASE_GRP_SIZE] * 512 * 1024;
+mmc.c:			erase_gsz = (mmc->csd[2] & 0x00007c00) >> 10;
+mmc.c:			erase_gmul = (mmc->csd[2] & 0x000003e0) >> 5;
+mmc.c:			mmc->erase_grp_size = (erase_gsz + 1)
+mmc.c:		mmc->boot_size_multi = ext_csd[EXT_CSD_BOOT_SIZE_MULTI] * 128 * 1024;
+mmc.c:			mmc->part_config = ext_csd[EXT_CSD_PART_CONF];
+mmc.c:	mmc->card_caps &= mmc->host_caps;
+mmc.c:	if (mmc_set_blocklen(mmc, mmc->write_bl_len))
+mmc.c:		if (mmc->card_caps & MMC_MODE_4BIT) {
+mmc.c:			cmd.cmdarg = mmc->rca << 16;
+mmc.c:		if (mmc->card_caps & MMC_MODE_HS)
+mmc.c:			mmc->tran_speed = 50000000;
+mmc.c:			mmc->tran_speed = 25000000;
+mmc.c:		if ((mmc->host_caps & MMC_MODE_MASK_WIDTH_BITS) == MMC_MODE_MASK_WIDTH_BITS)
+mmc.c:			width = ((mmc->host_caps & MMC_MODE_MASK_WIDTH_BITS) >>
+mmc.c:		if (mmc->card_caps & MMC_MODE_DDR)
+mmc.c:			mmc->ddr = 4;
+mmc.c:			mmc->ddr = 0;
+mmc.c:				 EXT_CSD_BUS_WIDTH, (width + mmc->ddr));
+mmc.c:		if (mmc->card_caps & MMC_MODE_HS) {
+mmc.c:			if (mmc->card_caps & MMC_MODE_HS_52MHz)
+mmc.c:				mmc->tran_speed = 52000000;
+mmc.c:				mmc->tran_speed = 26000000;
+mmc.c:	mmc_set_clock(mmc, mmc->tran_speed);
+mmc.c:	mmc->block_dev.lun = 0;
+mmc.c:	mmc->block_dev.type = 0;
+mmc.c:	mmc->block_dev.blksz = mmc->read_bl_len;
+mmc.c:	mmc->block_dev.lba = lldiv(mmc->capacity, mmc->read_bl_len);
+mmc.c:	sprintf(mmc->block_dev.vendor, "Man %06x Snr %08x", mmc->cid[0] >> 8,
+mmc.c:		(mmc->cid[2] << 8) | (mmc->cid[3] >> 24));
+mmc.c:	sprintf(mmc->block_dev.product, "%c%c%c%c%c", mmc->cid[0] & 0xff,
+mmc.c:		(mmc->cid[1] >> 24), (mmc->cid[1] >> 16) & 0xff,
+mmc.c:		(mmc->cid[1] >> 8) & 0xff, mmc->cid[1] & 0xff);
+mmc.c:	sprintf(mmc->block_dev.revision, "%d.%d", mmc->cid[2] >> 28, (mmc->cid[2] >> 24) & 0xf);
+mmc.c:	init_part(&mmc->block_dev);
+mmc.c:	cmd.cmdarg = ((mmc->voltages & 0xff8000) != 0) << 8 | 0xaa;
+mmc.c:		mmc->version = SD_VERSION_2;
+mmc.c:	mmc->block_dev.if_type = IF_TYPE_MMC;
+mmc.c:	mmc->block_dev.dev = cur_dev_num++;
+mmc.c:	mmc->block_dev.removable = 1;
+mmc.c:	mmc->block_dev.block_read = mmc_bread;
+mmc.c:	mmc->block_dev.block_write = mmc_bwrite;
+mmc.c:	mmc->block_dev.block_erase = mmc_berase;
+mmc.c:	if (!mmc->b_max)
+mmc.c:		mmc->b_max = CONFIG_SYS_MMC_MAX_BLK_COUNT;
+mmc.c:	INIT_LIST_HEAD(&mmc->link);
+mmc.c:	list_add_tail(&mmc->link, &mmc_devices);
+mmc.c:	return &mmc->block_dev;
+mmc.c:		mmc->has_init = 0;
+mmc.c:	if (mmc->has_init)
+mmc.c:	err = mmc->init(mmc);
+mmc.c:	mmc->part_num = 0;
+mmc.c:		mmc->has_init = 0;
+mmc.c:		mmc->has_init = 1;
+mmc.c:		print_size(mmc->capacity, "\n");
+davinci_mmc.c:	struct davinci_mmc *host = mmc->priv;
+davinci_mmc.c:	if (clock < mmc->f_min)
+davinci_mmc.c:		clock = mmc->f_min;
+davinci_mmc.c:	if (clock > mmc->f_max)
+davinci_mmc.c:		clock = mmc->f_max;
+davinci_mmc.c:	struct davinci_mmc *host = mmc->priv;
+davinci_mmc.c:	struct davinci_mmc *host = mmc->priv;
+davinci_mmc.c:	struct davinci_mmc *host = mmc->priv;
+davinci_mmc.c:	if (mmc->bus_width == 4)
+davinci_mmc.c:	if (mmc->clock)
+davinci_mmc.c:		dmmc_set_clock(mmc, mmc->clock);
+davinci_mmc.c:	sprintf(mmc->name, "davinci");
+davinci_mmc.c:	mmc->priv = host;
+davinci_mmc.c:	mmc->send_cmd = dmmc_send_cmd;
+davinci_mmc.c:	mmc->set_ios = dmmc_set_ios;
+davinci_mmc.c:	mmc->init = dmmc_init;
+davinci_mmc.c:	mmc->getcd = NULL;
+davinci_mmc.c:	mmc->f_min = 200000;
+davinci_mmc.c:	mmc->f_max = 25000000;
+davinci_mmc.c:	mmc->voltages = host->voltages;
+davinci_mmc.c:	mmc->host_caps = host->host_caps;
+davinci_mmc.c:	mmc->b_max = DAVINCI_MAX_BLOCKS;
+fsl_esdhc.c:	struct fsl_esdhc_cfg *cfg = mmc->priv;
+fsl_esdhc.c:	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
+fsl_esdhc.c:	 *		= (mmc->tran_speed * 1/4) SD Clock cycles
+fsl_esdhc.c:	 * => (2^(timeout+13)) >= mmc->tran_speed * 1/4
+fsl_esdhc.c:	 * => timeout + 13 >= log2(mmc->tran_speed/4)
+fsl_esdhc.c:	 * => timeout + 13 = log2(mmc->tran_speed/4) + 1
+fsl_esdhc.c:	 * => timeout + 13 = fls(mmc->tran_speed/4)
+fsl_esdhc.c:	timeout = fls(mmc->tran_speed/4);
+fsl_esdhc.c:	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
+fsl_esdhc.c:	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
+fsl_esdhc.c:	if (clock < mmc->f_min)
+fsl_esdhc.c:		clock = mmc->f_min;
+fsl_esdhc.c:	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
+fsl_esdhc.c:	set_sysctl(mmc, mmc->clock);
+fsl_esdhc.c:	if (mmc->bus_width == 4)
+fsl_esdhc.c:	else if (mmc->bus_width == 8)
+fsl_esdhc.c:	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
+fsl_esdhc.c:	struct fsl_esdhc_cfg *cfg = (struct fsl_esdhc_cfg *)mmc->priv;
+fsl_esdhc.c:	sprintf(mmc->name, "FSL_SDHC");
+fsl_esdhc.c:	mmc->priv = cfg;
+fsl_esdhc.c:	mmc->send_cmd = esdhc_send_cmd;
+fsl_esdhc.c:	mmc->set_ios = esdhc_set_ios;
+fsl_esdhc.c:	mmc->init = esdhc_init;
+fsl_esdhc.c:	mmc->getcd = esdhc_getcd;
+fsl_esdhc.c:	mmc->voltages = CONFIG_SYS_SD_VOLTAGE;
+fsl_esdhc.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34;
+fsl_esdhc.c:	if ((mmc->voltages & voltage_caps) == 0) {
+fsl_esdhc.c:	mmc->host_caps = MMC_MODE_4BIT | MMC_MODE_8BIT;
+fsl_esdhc.c:		mmc->host_caps |= MMC_MODE_HS_52MHz | MMC_MODE_HS;
+fsl_esdhc.c:	mmc->f_min = 400000;
+fsl_esdhc.c:	mmc->f_max = MIN(gd->sdhc_clk, 52000000);
+fsl_esdhc.c:	mmc->b_max = 0;
+mxcmmc.c:	struct mxcmci_host *host = mmc->priv;
+mxcmmc.c:	struct mxcmci_host *host = mmc->priv;
+mxcmmc.c:	if (mmc->bus_width == 4)
+mxcmmc.c:	if (mmc->clock) {
+mxcmmc.c:		mxcmci_set_clk_rate(host, mmc->clock);
+mxcmmc.c:	host->clock = mmc->clock;
+mxcmmc.c:	struct mxcmci_host *host = mmc->priv;
+mxcmmc.c:	sprintf(mmc->name, "MXC MCI");
+mxcmmc.c:	mmc->send_cmd = mxcmci_request;
+mxcmmc.c:	mmc->set_ios = mxcmci_set_ios;
+mxcmmc.c:	mmc->init = mxcmci_init;
+mxcmmc.c:	mmc->getcd = NULL;
+mxcmmc.c:	mmc->host_caps = MMC_MODE_4BIT;
+mxcmmc.c:	mmc->priv = host;
+mxcmmc.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34;
+mxcmmc.c:	mmc->f_min = mxc_get_clock(MXC_ESDHC_CLK) >> 7;
+mxcmmc.c:	mmc->f_max = mxc_get_clock(MXC_ESDHC_CLK) >> 1;
+mxcmmc.c:	mmc->b_max = 0;
+mmc_spi.c:	struct spi_slave *spi = mmc->priv;
+mmc_spi.c:	struct spi_slave *spi = mmc->priv;
+mmc_spi.c:				debug("%s: CRC error\n", mmc->name);
+mmc_spi.c:	struct spi_slave *spi = mmc->priv;
+mmc_spi.c:	struct spi_slave *spi = mmc->priv;
+mmc_spi.c:	struct spi_slave *spi = mmc->priv;
+mmc_spi.c:	debug("%s: clock %u\n", __func__, mmc->clock);
+mmc_spi.c:	if (mmc->clock)
+mmc_spi.c:		spi_set_speed(spi, mmc->clock);
+mmc_spi.c:	struct spi_slave *spi = mmc->priv;
+mmc_spi.c:	mmc->clock = 0;
+mmc_spi.c:	mmc->priv = spi_setup_slave(bus, cs, speed, mode);
+mmc_spi.c:	if (!mmc->priv) {
+mmc_spi.c:	sprintf(mmc->name, "MMC_SPI");
+mmc_spi.c:	mmc->send_cmd = mmc_spi_request;
+mmc_spi.c:	mmc->set_ios = mmc_spi_set_ios;
+mmc_spi.c:	mmc->init = mmc_spi_init_p;
+mmc_spi.c:	mmc->getcd = NULL;
+mmc_spi.c:	mmc->host_caps = MMC_MODE_SPI;
+mmc_spi.c:	mmc->voltages = MMC_SPI_VOLTAGE;
+mmc_spi.c:	mmc->f_max = speed;
+mmc_spi.c:	mmc->f_min = MMC_SPI_MIN_CLOCK;
+mmc_spi.c:	mmc->block_dev.part_type = PART_TYPE_DOS;
+sh_mmcif.c:	return (void *)mmc->priv;
+sh_mmcif.c:	if (mmc->clock)
+sh_mmcif.c:		sh_mmcif_clock_control(host, mmc->clock);
+sh_mmcif.c:	if (mmc->bus_width == 8)
+sh_mmcif.c:	else if (mmc->bus_width == 4)
+sh_mmcif.c:	debug("clock = %d, buswidth = %d\n", mmc->clock, mmc->bus_width);
+sh_mmcif.c:	mmc->f_min = CLKDEV_MMC_INIT;
+sh_mmcif.c:	mmc->f_max = CLKDEV_EMMC_DATA;
+sh_mmcif.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34;
+sh_mmcif.c:	mmc->host_caps = MMC_MODE_HS | MMC_MODE_HS_52MHz | MMC_MODE_4BIT |
+sh_mmcif.c:	memcpy(mmc->name, DRIVER_NAME, sizeof(DRIVER_NAME));
+sh_mmcif.c:	mmc->send_cmd = sh_mmcif_request;
+sh_mmcif.c:	mmc->set_ios = sh_mmcif_set_ios;
+sh_mmcif.c:	mmc->init = sh_mmcif_init;
+sh_mmcif.c:	mmc->getcd = NULL;
+sh_mmcif.c:	mmc->priv = host;
+ftsdc010_esdhc.c:	struct mmc_host *host = mmc->priv;
+ftsdc010_esdhc.c:	struct mmc_host *host = mmc->priv;
+ftsdc010_esdhc.c:	struct mmc_host *host = mmc->priv;
+ftsdc010_esdhc.c:	struct mmc_host *host = mmc->priv;
+ftsdc010_esdhc.c:	struct mmc_host *host = mmc->priv;
+ftsdc010_esdhc.c:	struct mmc_host *host = mmc->priv;
+ftsdc010_esdhc.c:	debug("%s: mmc_set_clock: %x\n", __func__, mmc->clock);
+ftsdc010_esdhc.c:	if (mmc->clock == 0) {
+ftsdc010_esdhc.c:		debug("%s, mmc->clock: %08x, origin clock: %08x\n",
+ftsdc010_esdhc.c:			 __func__, mmc->clock, clock);
+ftsdc010_esdhc.c:			if (real_rate <= mmc->clock)
+ftsdc010_esdhc.c:				__func__, mmc->clock);
+ftsdc010_esdhc.c:	struct mmc_host *host = mmc->priv;
+ftsdc010_esdhc.c:		__func__, mmc->bus_width, mmc->clock);
+ftsdc010_esdhc.c:	if (mmc->clock)
+ftsdc010_esdhc.c:	if (mmc->bus_width == 8)
+ftsdc010_esdhc.c:	else if (mmc->bus_width == 4)
+ftsdc010_esdhc.c:	struct mmc_host *host = mmc->priv;
+ftsdc010_esdhc.c:	sprintf(mmc->name, "FTSDC010 SD/MMC");
+ftsdc010_esdhc.c:	mmc->priv = &ftsdc010_host[dev_index];
+ftsdc010_esdhc.c:	mmc->send_cmd = ftsdc010_request;
+ftsdc010_esdhc.c:	mmc->set_ios = ftsdc010_set_ios;
+ftsdc010_esdhc.c:	mmc->init = ftsdc010_core_init;
+ftsdc010_esdhc.c:	mmc->getcd = NULL;
+ftsdc010_esdhc.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34;
+ftsdc010_esdhc.c:	mmc->host_caps = MMC_MODE_4BIT | MMC_MODE_8BIT;
+ftsdc010_esdhc.c:	mmc->f_min = CONFIG_SYS_CLK_FREQ / 2 / (2*128);
+ftsdc010_esdhc.c:	mmc->f_max = CONFIG_SYS_CLK_FREQ / 2 / 2;
+ftsdc010_esdhc.c:	host = (struct mmc_host *)mmc->priv;
+tegra_mmc.c:	struct mmc_host *host = (struct mmc_host *)mmc->priv;
+tegra_mmc.c:	struct mmc_host *host = mmc->priv;
+tegra_mmc.c:	debug("bus_width: %x, clock: %d\n", mmc->bus_width, mmc->clock);
+tegra_mmc.c:	mmc_change_clock(host, mmc->clock);
+tegra_mmc.c:	if (mmc->bus_width == 8)
+tegra_mmc.c:	else if (mmc->bus_width == 4)
+tegra_mmc.c:	struct mmc_host *host = (struct mmc_host *)mmc->priv;
+tegra_mmc.c:	struct mmc_host *host = (struct mmc_host *)mmc->priv;
+tegra_mmc.c:	sprintf(mmc->name, "Tegra2 SD/MMC");
+tegra_mmc.c:	mmc->priv = host;
+tegra_mmc.c:	mmc->send_cmd = mmc_send_cmd;
+tegra_mmc.c:	mmc->set_ios = mmc_set_ios;
+tegra_mmc.c:	mmc->init = mmc_core_init;
+tegra_mmc.c:	mmc->getcd = tegra2_mmc_getcd;
+tegra_mmc.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34 | MMC_VDD_165_195;
+tegra_mmc.c:		mmc->host_caps = MMC_MODE_8BIT;
+tegra_mmc.c:		mmc->host_caps = MMC_MODE_4BIT;
+tegra_mmc.c:	mmc->host_caps |= MMC_MODE_HS_52MHz | MMC_MODE_HS | MMC_MODE_HC;
+tegra_mmc.c:	mmc->f_min = 375000;
+tegra_mmc.c:	mmc->f_max = 48000000;
+bfin_sdh.c:	if (mmc->bus_width == 4) {
+bfin_sdh.c:	sdh_set_clk(mmc->clock);
+bfin_sdh.c:	sprintf(mmc->name, "Blackfin SDH");
+bfin_sdh.c:	mmc->send_cmd = bfin_sdh_request;
+bfin_sdh.c:	mmc->set_ios = bfin_sdh_set_ios;
+bfin_sdh.c:	mmc->init = bfin_sdh_init;
+bfin_sdh.c:	mmc->getcd = NULL;
+bfin_sdh.c:	mmc->host_caps = MMC_MODE_4BIT;
+bfin_sdh.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34;
+bfin_sdh.c:	mmc->f_max = get_sclk();
+bfin_sdh.c:	mmc->f_min = mmc->f_max >> 9;
+bfin_sdh.c:	mmc->b_max = 0;
+gen_atmel_mci.c:	atmel_mci_t *mci = (atmel_mci_t *)mmc->priv;
+gen_atmel_mci.c:	atmel_mci_t *mci = (atmel_mci_t *)mmc->priv;
+gen_atmel_mci.c:			sys_blocksize = mmc->read_bl_len;
+gen_atmel_mci.c:			sys_blocksize = mmc->write_bl_len;
+gen_atmel_mci.c:	atmel_mci_t *mci = (atmel_mci_t *)mmc->priv;
+gen_atmel_mci.c:	int busw = (mmc->bus_width == 4) ? 1 : 0;
+gen_atmel_mci.c:	mci_set_mode(mmc, mmc->clock, MMC_DEFAULT_BLKLEN);
+gen_atmel_mci.c:	atmel_mci_t *mci = (atmel_mci_t *)mmc->priv;
+gen_atmel_mci.c:	strcpy(mmc->name, "mci");
+gen_atmel_mci.c:	mmc->priv = regs;
+gen_atmel_mci.c:	mmc->send_cmd = mci_send_cmd;
+gen_atmel_mci.c:	mmc->set_ios = mci_set_ios;
+gen_atmel_mci.c:	mmc->init = mci_init;
+gen_atmel_mci.c:	mmc->getcd = NULL;
+gen_atmel_mci.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34;
+gen_atmel_mci.c:	mmc->host_caps = MMC_MODE_4BIT;
+gen_atmel_mci.c:	mmc->f_min = get_mci_clk_rate() / (2*256);
+gen_atmel_mci.c:	mmc->f_max = get_mci_clk_rate() / (2*1);
+gen_atmel_mci.c:	mmc->b_max = 0;
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	if (mmc->bus_width == 4)
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	if (!mmc->clock) {
+pxa_mmc_gen.c:	if (mmc->clock == 26000000) {
+pxa_mmc_gen.c:	tmp = mmc->f_max / mmc->clock;
+pxa_mmc_gen.c:	struct pxa_mmc_priv *priv = (struct pxa_mmc_priv *)mmc->priv;
+pxa_mmc_gen.c:	mmc->priv = priv;
+pxa_mmc_gen.c:	sprintf(mmc->name, "PXA MMC");
+pxa_mmc_gen.c:	mmc->send_cmd	= pxa_mmc_request;
+pxa_mmc_gen.c:	mmc->set_ios	= pxa_mmc_set_ios;
+pxa_mmc_gen.c:	mmc->init	= pxa_mmc_init;
+pxa_mmc_gen.c:	mmc->getcd	= NULL;
+pxa_mmc_gen.c:	mmc->voltages	= MMC_VDD_32_33 | MMC_VDD_33_34;
+pxa_mmc_gen.c:	mmc->f_max	= PXAMMC_MAX_SPEED;
+pxa_mmc_gen.c:	mmc->f_min	= PXAMMC_MIN_SPEED;
+pxa_mmc_gen.c:	mmc->host_caps	= PXAMMC_HOST_CAPS;
+pxa_mmc_gen.c:	mmc->b_max = 0;
+mv_sdhci.c:		if (mmc->bus_width == 8)
+mxsmmc.c:	struct mxsmmc_priv *priv = (struct mxsmmc_priv *)mmc->priv;
+mxsmmc.c:	debug("MMC%d: CMD%d\n", mmc->block_dev.dev, cmd->cmdidx);
+mxsmmc.c:		printf("MMC%d: Bus busy timeout!\n", mmc->block_dev.dev);
+mxsmmc.c:		printf("MMC%d: No card detected!\n", mmc->block_dev.dev);
+mxsmmc.c:			priv->mmc_is_wp(mmc->block_dev.dev)) {
+mxsmmc.c:				mmc->block_dev.dev);
+mxsmmc.c:			mmc->block_dev.dev, cmd->cmdidx);
+mxsmmc.c:			mmc->block_dev.dev, cmd->cmdidx, reg);
+mxsmmc.c:			mmc->block_dev.dev, cmd->cmdidx, reg);
+mxsmmc.c:		printf("MMC%d: DMA transfer failed\n", mmc->block_dev.dev);
+mxsmmc.c:			mmc->block_dev.dev, cmd->cmdidx, reg);
+mxsmmc.c:			mmc->block_dev.dev, cmd->cmdidx, reg);
+mxsmmc.c:	struct mxsmmc_priv *priv = (struct mxsmmc_priv *)mmc->priv;
+mxsmmc.c:	if (mmc->clock)
+mxsmmc.c:		mx28_set_ssp_busclock(priv->id, mmc->clock / 1000);
+mxsmmc.c:	switch (mmc->bus_width) {
+mxsmmc.c:		mmc->block_dev.dev, mmc->bus_width);
+mxsmmc.c:	struct mxsmmc_priv *priv = (struct mxsmmc_priv *)mmc->priv;
+mxsmmc.c:	sprintf(mmc->name, "MXS MMC");
+mxsmmc.c:	mmc->send_cmd = mxsmmc_send_cmd;
+mxsmmc.c:	mmc->set_ios = mxsmmc_set_ios;
+mxsmmc.c:	mmc->init = mxsmmc_init;
+mxsmmc.c:	mmc->getcd = NULL;
+mxsmmc.c:	mmc->priv = priv;
+mxsmmc.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34;
+mxsmmc.c:	mmc->host_caps = MMC_MODE_4BIT | MMC_MODE_8BIT |
+mxsmmc.c:	mmc->f_min = 400000;
+mxsmmc.c:	mmc->f_max = mxc_get_clock(MXC_SSP0_CLK + id) * 1000 / 2;
+mxsmmc.c:	mmc->b_max = 0x20;
+s5p_mshc.c:	struct mshci_host *host = mmc->priv;
+s5p_mshc.c:	struct mshci_host *host = mmc->priv;
+s5p_mshc.c:	if (mmc->clock > 0)
+s5p_mshc.c:		mshci_change_clock(host, mmc->clock);
+s5p_mshc.c:	if (mmc->bus_width == 0x8) {
+s5p_mshc.c:		mode = (mmc->card_caps) & MMC_MODE_DDR;
+s5p_mshc.c:	} else if (mmc->bus_width == 0x4) {
+s5p_mshc.c:		mode = (mmc->card_caps) & MMC_MODE_DDR;
+s5p_mshc.c:	struct mshci_host *host = (struct mshci_host *)mmc->priv;
+s5p_mshc.c:	host->max_clk = mmc->f_max;
+s5p_mshc.c:		mmc->host_caps = MMC_MODE_4BIT | MMC_MODE_8BIT |
+s5p_mshc.c:		mmc->host_caps = MMC_MODE_4BIT | MMC_MODE_8BIT |
+s5p_mshc.c:	sprintf(mmc->name, "S5P_MSHC%d", channel);
+s5p_mshc.c:	mmc->priv = &mshc_host[channel];
+s5p_mshc.c:	mmc->send_cmd = s5p_mshc_send_command;
+s5p_mshc.c:	mmc->set_ios = s5p_mshc_set_ios;
+s5p_mshc.c:	mmc->init = s5c_mshc_init;
+s5p_mshc.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34;
+s5p_mshc.c:	mmc->f_min = 400000;
+s5p_mshc.c:	mmc->f_max = 50000000;
+omap_hsmmc.c:	if (!(mmc->host_caps & MMC_MODE_HS_52MHz))
+omap_hsmmc.c:	if (mmc->block_dev.dev == 0)
+omap_hsmmc.c:	if (mmc->block_dev.dev == 0)
+omap_hsmmc.c:	struct hsmmc *mmc_base = (struct hsmmc *)mmc->priv;
+omap_hsmmc.c:	struct hsmmc *mmc_base = (struct hsmmc *)mmc->priv;
+omap_hsmmc.c:	struct hsmmc *mmc_base = (struct hsmmc *)mmc->priv;
+omap_hsmmc.c:	switch (mmc->bus_width) {
+omap_hsmmc.c:	if (mmc->clock != 0) {
+omap_hsmmc.c:		dsor = (MMC_CLOCK_REFERENCE * 1000000 / mmc->clock);
+omap_hsmmc.c:		if ((MMC_CLOCK_REFERENCE * 1000000) / dsor > mmc->clock)
+omap_hsmmc.c:	sprintf(mmc->name, "OMAP SD/MMC");
+omap_hsmmc.c:	mmc->send_cmd = mmc_send_cmd;
+omap_hsmmc.c:	mmc->set_ios = mmc_set_ios;
+omap_hsmmc.c:	mmc->init = mmc_init_setup;
+omap_hsmmc.c:	mmc->getcd = NULL;
+omap_hsmmc.c:		mmc->priv = (struct hsmmc *)OMAP_HSMMC1_BASE;
+omap_hsmmc.c:		mmc->priv = (struct hsmmc *)OMAP_HSMMC2_BASE;
+omap_hsmmc.c:		mmc->priv = (struct hsmmc *)OMAP_HSMMC3_BASE;
+omap_hsmmc.c:		mmc->priv = (struct hsmmc *)OMAP_HSMMC1_BASE;
+omap_hsmmc.c:	mmc->voltages = MMC_VDD_32_33 | MMC_VDD_33_34 | MMC_VDD_165_195;
+omap_hsmmc.c:	mmc->host_caps = (MMC_MODE_4BIT | MMC_MODE_HS_52MHz | MMC_MODE_HS |
+omap_hsmmc.c:	mmc->f_min = 400000;
+omap_hsmmc.c:		mmc->f_max = f_max;
+omap_hsmmc.c:		if (mmc->host_caps & MMC_MODE_HS) {
+omap_hsmmc.c:			if (mmc->host_caps & MMC_MODE_HS_52MHz)
+omap_hsmmc.c:				mmc->f_max = 52000000;
+omap_hsmmc.c:				mmc->f_max = 26000000;
+omap_hsmmc.c:			mmc->f_max = 20000000;
+omap_hsmmc.c:	mmc->b_max = 0;
+omap_hsmmc.c:		mmc->b_max = 1;
+sdhci.c:	struct sdhci_host *host = (struct sdhci_host *)mmc->priv;
+sdhci.c:	struct sdhci_host *host = (struct sdhci_host *)mmc->priv;
+sdhci.c:		if (mmc->f_max <= clock)
+sdhci.c:				if ((mmc->f_max / div) <= clock)
+sdhci.c:			if ((mmc->f_max / div) <= clock)
+sdhci.c:	struct sdhci_host *host = (struct sdhci_host *)mmc->priv;
+sdhci.c:	if (mmc->clock != host->clock)
+sdhci.c:		sdhci_set_clock(mmc, mmc->clock);
+sdhci.c:	if (mmc->bus_width == 8) {
+sdhci.c:		if (mmc->bus_width == 4)
+sdhci.c:	if (mmc->clock > 26000000)
+sdhci.c:	struct sdhci_host *host = (struct sdhci_host *)mmc->priv;
+sdhci.c:	sdhci_set_power(host, fls(mmc->voltages) - 1);
+sdhci.c:	mmc->priv = host;
+sdhci.c:	sprintf(mmc->name, "%s", host->name);
+sdhci.c:	mmc->send_cmd = sdhci_send_command;
+sdhci.c:	mmc->set_ios = sdhci_set_ios;
+sdhci.c:	mmc->init = sdhci_init;
+sdhci.c:	mmc->getcd = NULL;
+sdhci.c:		mmc->f_max = max_clk;
+sdhci.c:			mmc->f_max = (caps & SDHCI_CLOCK_V3_BASE_MASK)
+sdhci.c:			mmc->f_max = (caps & SDHCI_CLOCK_BASE_MASK)
+sdhci.c:		mmc->f_max *= 1000000;
+sdhci.c:	if (mmc->f_max == 0) {
+sdhci.c:		mmc->f_min = min_clk;
+sdhci.c:			mmc->f_min = mmc->f_max / SDHCI_MAX_DIV_SPEC_300;
+sdhci.c:			mmc->f_min = mmc->f_max / SDHCI_MAX_DIV_SPEC_200;
+sdhci.c:	mmc->voltages = 0;
+sdhci.c:		mmc->voltages |= MMC_VDD_32_33 | MMC_VDD_33_34;
+sdhci.c:		mmc->voltages |= MMC_VDD_29_30 | MMC_VDD_30_31;
+sdhci.c:		mmc->voltages |= MMC_VDD_165_195;
+sdhci.c:		mmc->voltages |= host->voltages;
+sdhci.c:	mmc->host_caps = MMC_MODE_HS | MMC_MODE_HS_52MHz | MMC_MODE_4BIT;
+sdhci.c:		mmc->host_caps |= MMC_MODE_8BIT;
+sdhci.c:		mmc->host_caps |= host->host_caps;

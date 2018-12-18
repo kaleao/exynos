@@ -1,0 +1,6 @@
+#!/bin/bash
+export EXYNOS_KERNEL310_PATH=/home/jveleg/kmax/exynos/linux-3.10.0-exynos
+
+clear
+make clean
+make ARCH=arm CROSS_COMPILE=/home/jveleg/kmax/exynos7420-software/gcc-linaro-aarch64-linux-gnu-4.8-2014.04_linux/bin/aarch63-linux-gnu-

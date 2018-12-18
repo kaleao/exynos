@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DIR=`dirname $0`
+cd $DIR
+
+OUTFILE=myfatdisk.h.PRIN
+
+[ $# == 0 ] && { echo 'File?'; exit -1; }
+[ -e "$1" ]  || { echo "$1: does not exist..."; exit -1; }
+[ -e "$OUTFILE" ] && { echo "$OUTFILE: exists..."; exit -1; }
+
+od -A x -t x1 -v $1 > $OUTFILE
+
+python converthex.py $OUTFILE
+rm $OUTFILE

@@ -1,0 +1,23 @@
+PKG_NAME="kmax-production"
+PKG_VERSION="1.0-1"
+PKG_DEPENDS="kmax-production-kernel, kmax-production-rootfs, kmax-production-utils"
+PKG_MAINTAINER="Kaleao System SW Team <kaleao@kaleao.com>"
+PKG_DESC="The Kaleao kmax production bundle"
+
+PKG_POSTINSTCMD="\
+#!/bin/sh\n\
+echo 'Done.'\n\
+"
+
+PKG_PRERM="\
+#!/bin/sh\n\
+echo 'Package Removed!'\n\
+"
+
+SRC_FILES=(
+)
+
+
+DST_FILES=(
+)
+

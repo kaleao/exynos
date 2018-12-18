@@ -1,0 +1,9 @@
+/rootfs_overlay/etc/init.d/S41kmaxnet
+/rootfs_overlay/etc/init.d/S95writeufs
+/rootfs_overlay/root/util/
+/rootfs_overlay/ufs/Image_noramfs
+/rootfs_overlay/ufs/kmax-revb-ubuntu.dtb
+/rootfs_overlay/ufs/kmax-revb-ufs.dtb
+/rootfs_overlay/ufs/revb-unsec.set.bin
+/rootfs_overlay/ufs/revb.set.bin
+/rootfs_overlay/ufs/rootfs.tar.gz

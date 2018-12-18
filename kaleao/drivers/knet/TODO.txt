@@ -1,0 +1,18 @@
+
+
+Modify kgex-main.c to init rings with lp->tx_nr_descs and lp->rx_nr_descs
+(remove module load-time tx_bd_num and rx_bd_num parameters)
+
+Modify kgex-main.c to set/get Coalesce and Timeout from
+lp->dma_tx_coalesce, lp->dma_tx_timeout,
+lp->dma_rx_coalesce, lp->dma_rx_timeout
+
+
+Modify kgex-main.c:
+Remove all old deprecated stats counters
+Add new counters from kgex.h kgex_stats struct
+and update them properly
+
+
+
+

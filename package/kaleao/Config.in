@@ -1,0 +1,3 @@
+source "package/kaleao/exynos-agent/Config.in"
+source "package/kaleao/kmax-appliance/Config.in"
+

@@ -1,0 +1,18 @@
+PKG_NAME="kmax-production-kernel"
+PKG_VERSION="1.0-1"
+PKG_DEPENDS="kmax-production-rootfs"
+PKG_MAINTAINER="Kaleao System SW Team <kaleao@kaleao.com>"
+PKG_DESC="The production kernel"
+
+SRC_FILES=(
+"./kaleao/system/rootfs_overlay/ufs/Image_noramfs"
+"./kaleao/drivers/knet/*.ko"
+"./ubuntu/kmax-revb-ubuntu.dtb"
+)
+
+DST_FILES=(
+"kaleao/$PKG_NAME/Image"
+"kaleao/$PKG_NAME/drivers/."
+"kaleao/$PKG_NAME/."
+)
+

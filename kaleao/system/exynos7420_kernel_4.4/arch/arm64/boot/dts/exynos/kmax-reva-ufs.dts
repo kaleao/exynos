@@ -1,0 +1,20 @@
+/*
+ * Howchip board device tree source
+ *
+ * Copyright (c) 2016 ICS-FORTH, Crete, Greece
+ *		http://ics.forth.gr
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+*/
+
+/dts-v1/;
+#include "kmax-reva.dtsi"
+
+/ {
+	chosen {
+		bootargs = "root=/dev/sda1 rw rootfstype=ext4 rootwait clk_ignore_unused console=ttySAC0,115200n8";
+	};
+
+};

@@ -1,0 +1,6 @@
+config BR2_PACKAGE_KALEAO_EXYNOSAGENT
+	bool "exynos-agent"
+	help
+	  The Baseboard Management Controller for Kaleao Exynos. 
+
+

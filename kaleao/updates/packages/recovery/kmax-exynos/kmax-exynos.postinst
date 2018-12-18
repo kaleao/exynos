@@ -1,0 +1,127 @@
+#!/bin/bash
+
+RECOVERY="no"
+BUILD_TARGET="server"
+
+echo "Installing \"${BUILD_TARGET}\" with recovery set to \"${RECOVERY}\", node is \"`uname -m`\""
+
+# Determinte the executing platform. Zynq's ARM is armv7l
+# while Exynos cores are v8a/aarch64.
+if [ `uname -m` == "armv7l" ]; then
+	# Terminate any residual update scripts that might be running.
+	ps w | grep update_exynos.sh | grep -v grep | awk {'print $1'} | xargs kill &> /dev/null
+	echo "Updating servers..."
+	cd /root/
+
+	# Reset (in parallell) exynoses to recovery mode
+	for i in `seq 0 3`; do
+		echo 3 > /proc/knode/exynos${i}/reset &
+	done
+
+	# A certain amount of sleep is needed, but not understood why. 
+	# Bootloader maybe? For sequential execution the value was 3s,
+	# but now a higher one was required.
+	sleep 10s
+
+	# Run update scripts in parallel. Cannot check for return code,
+	# so print and record the output.
+	for i in `seq 0 3`; do
+		states/update_exynos.sh $i | tee -a /root/update_exynos.log &
+	done
+
+	# Wait for all background update scripts to finish
+	while :; do
+		ps | grep -v grep | grep -q update_exynos.sh
+		[ $? == 1 ] && break
+		sleep 1s
+	done
+elif [ `uname -m` == "aarch64" ]; then
+	# This is the recovery kernel, flattened device tree and (our) drivers
+	if [ "${RECOVERY}" == "yes" ]; then
+		echo 'Writing recovery kernel to /dev/sda...'
+		dd if=/kaleao/kmax-exynos/Image-golden of=/dev/sda seek=20480 &> /dev/null
+		echo 'Writing recovery device tree...'
+		dd if=/kaleao/kmax-exynos/kmax-revb-ufs.dtb of=/dev/sda seek=18961 &> /dev/null
+		echo 'Copying recovery drivers...'
+		cp /kaleao/kmax-exynos/drivers/* /root/drivers
+
+		cp -raf /kaleao/kmax-exynos/root/util/* /root/util/
+		echo 'Copying recovery services...'
+		cp -raf /kaleao/kmax-exynos/S41kmaxnet /etc/init.d/
+		chmod 755 /etc/init.d/S41kmaxnet
+	fi
+
+	# Print the checksum of the kernel/dtb just in case
+	md5sum /kaleao/kmax-exynos/Image /kaleao/kmax-exynos/kmax-revb-ubuntu.dtb
+
+	# Write the production kernel regardless of recovery mode
+	echo 'Writing production kernel to /dev/sda...'
+	dd if=/kaleao/kmax-exynos/Image of=/dev/sda seek=245760 &> /dev/null
+	echo 'Writing device tree...'
+	dd if=/kaleao/kmax-exynos/kmax-revb-ubuntu.dtb of=/dev/sda seek=225280 &> /dev/null
+
+	# Prepare the production fs system files
+	if [ "${BUILD_TARGET}" == "server" ]; then
+		echo 'Copying drivers...'
+		umount /mnt &> /dev/null
+		mount /dev/sda3 /mnt &> /dev/null
+		mkdir -p /mnt/root/drivers
+		cp -f /kaleao/kmax-exynos/drivers/* /mnt/root/drivers
+
+		echo 'Copying utils...'
+		mkdir -p /mnt/root/util
+		cp -raf /kaleao/kmax-exynos/root/util/* /mnt/root/util/
+		echo 'Copying services...'
+		cp -raf /kaleao/kmax-exynos/netexy /mnt/etc/init.d/
+		cp -raf /kaleao/kmax-exynos/irqbalance /mnt/etc/default/
+		mkdir -p /mnt/etc/dhcp/dhclient-enter-hooks.d/
+		cp -raf /kaleao/kmax-exynos/kmax_set_update_repo /mnt/etc/dhcp/dhclient-enter-hooks.d/
+		cp -rafn /kaleao/kmax-exynos/lib/* /lib/
+		sync
+		echo 'Attaching services to init runlevels'
+		rm -f /mnt/etc/rc{0,2,4,5,6}.d/{S,K}01netexy
+		cd /mnt/etc/rc0.d
+		ln -s ../init.d/netexy K01netexy
+		cd /mnt/etc/rc2.d
+		ln -s ../init.d/netexy S01netexy
+		cd /mnt/etc/rc4.d
+		ln -s ../init.d/netexy S01netexy
+		cd /mnt/etc/rc5.d
+		ln -s ../init.d/netexy S01netexy
+		cd /mnt/etc/rc6.d
+		ln -s ../init.d/netexy K01netexy
+		
+		cp -raf /kaleao/kmax-exynos/journald.conf /mnt/etc/systemd/
+		mkdir -p /mnt/var/log/journal
+
+		echo 'Copying kernel modules...'
+		rm -rf /mnt/lib/modules/*
+		cp -af /kaleao/kmax-exynos/kernel_modules/lib/modules /mnt/lib
+		chown -R root:root /mnt/lib/modules
+
+		echo 'Copying kernel headers...'
+		rm -rf /mnt/usr/src/*
+		cp -af /kaleao/kmax-exynos/kernel_headers/usr/src /mnt/usr
+		chown -R root:root /mnt/usr/src
+		find /mnt/usr/src/ -exec touch {} +
+
+		cd
+
+		echo 'Formatting swap partition (/dev/sda5)'
+		mkswap /dev/sda5
+		
+		echo 'Enabling swap partition at boot'
+		[ -f /mnt/etc/fstab ] && sed -i '/swap/d' /mnt/etc/fstab
+		echo '' >> /mnt/etc/fstab
+		echo '/dev/sda5    none    swap    sw    0   0' >> /mnt/etc/fstab
+		umount /mnt
+	fi
+else
+	# We don't know where we are running, abort immidately to avoid damage!
+	echo "Unable to determinte the execution platform!"
+	exit 1
+fi
+
+echo "Done."
+sync
+exit 0

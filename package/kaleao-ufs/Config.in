@@ -1,0 +1,5 @@
+config BR2_PACKAGE_KALEAO_UFS
+        bool "kaleao-ufs"
+        help
+          Installation of kaleao ufs files
+

@@ -1,0 +1,45 @@
+# arch/arm/mach-exynos/Kconfig
+#
+# Copyright (c) 2010-2011 Samsung Electronics Co., Ltd.
+#		http://www.samsung.com/
+#
+# Licensed under GPLv2
+
+# Configuration options for the EXYNOS4
+
+if ARCH_EXYNOS
+
+menu "Kaleao KMAX ASV"
+
+config SOC_EXYNOS7420
+	bool "Kmax EXYNOS7420"
+	default n
+	depends on ARCH_EXYNOS
+	help
+	  SOC exynos 7420 support
+
+config EXYNOS_ASV
+	bool "ENABLE EXYNOS ASV"
+	default n
+	depends on ARCH_EXYNOS
+
+config EXYNOS_ASV_DYNAMIC_ABB
+	bool "Enable Dynamic ABB"
+	default n
+	depends on EXYNOS_ASV
+
+config EXYNOS_ASV_SUPPORT_RCC
+	bool "Support RCC Table"
+	default n
+	depends on EXYNOS_ASV
+
+config EXYNOS_ASV_MARGIN_TEST
+	bool "Enable Margin Test"
+	default n
+	depends on EXYNOS_ASV
+
+
+endmenu
+
+
+endif

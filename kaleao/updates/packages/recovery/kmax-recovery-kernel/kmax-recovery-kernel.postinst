@@ -1,0 +1,8 @@
+#!/bin/sh
+echo 'Flushing recovery kernel to /dev/sda...'
+dd if=/kaleao/kmax-recovery-kernel/Image_golden of=/dev/sda seek=20480 &> /dev/null
+echo 'Flushing recovery device tree...'
+dd if=/kaleao/kmax-recovery-kernel/kmax-revb-ufs.dtb of=/dev/sda seek=18961
+echo 'Copying recovery drivers...'
+cp /kaleao/kmax-recovery-kernel/drivers/* /root/drivers
+sync

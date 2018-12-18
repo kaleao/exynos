@@ -1,0 +1,11 @@
+#!/bin/sh
+echo 'Flushing production kernel to /dev/sda...'
+dd if=/kaleao/kmax-production-kernel/Image of=/dev/sda seek=245760 &> /dev/null
+echo 'Flushing device tree...'
+dd if=/kaleao/kmax-production-kernel/kmax-revb-ubuntu.dtb of=/dev/sda seek=225280
+umount /mnt &> /dev/null
+echo 'Copying drivers...'
+mount /dev/sda3 /mnt
+cp -f /kaleao/kmax-production-kernel/drivers/* /mnt/root/drivers
+sync
+umount /mnt

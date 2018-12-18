@@ -1,0 +1,17 @@
+uuid_disk=${uuid_disk};
+name=fat,size=32KiB,start=0x1,uuid=${uuid_fat};
+name=system,size=1000MiB,start=100MiB,uuid=${uuid_system};
+name=userdata,size=28000MiB,uuid=${uuid_userdata};
+name=cache,size=800MiB,uuid=${uuid_cache};
+name=modem,size=100MiB,uuid=${uuid_modem};
+name=efs,size=10MiB,uuid=${uuid_efs};
+name=ftm,size=10Mib,uuid=${uuid_ftm};
+name=misc,size=10Mib,uuid=${uuid_misc};
+name=kernel,size=20MiB,start=2MiB,uuid=${uuid_kernel};
+name=ramdisk,size=26MiB,uuid=${uuid_rfs};
+name=recovery,size=26MiB,uuid=${uuid_recovery};
+name=dtb,size=1MiB,uuid=${uuid_dtb};
+name=ldfw,size=4MiB,uuid=${uuid_ldfw};
+name=bootlogo,size=10Mib,uuid=${uuid_bootlogo};
+name=font,size=1Mib,uuid=${uuid_font};
+name=engmode,size=2Mib,uuid=${uuid_engmode};

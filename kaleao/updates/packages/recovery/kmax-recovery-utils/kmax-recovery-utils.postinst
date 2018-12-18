@@ -1,0 +1,10 @@
+#!/bin/sh
+echo 'Copying recovery utils...'
+mkdir -p /root/util
+cp -raf /kaleao/kmax-recovery-utils/root/util/* /root/util/
+echo 'Copying recovery services...'
+cp -raf /kaleao/kmax-recovery-utils/S41kmaxnet /etc/init.d/
+sync
+chmod 755 /etc/init.d/S41kmaxnet
+sync
+echo 'Done.'

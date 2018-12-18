@@ -1,0 +1,30 @@
+#!/bin/sh
+echo 'Copying utils...'
+mkdir -p /root/util
+cp -raf /kaleao/kmax-utils/root/util/* /root/util/
+echo 'Copying services...'
+cp -raf /kaleao/kmax-utils/netexy /etc/init.d/
+chmod 755 /etc/init.d/netexy
+sync
+echo 'Attaching services to init runlevels'
+rm -f /etc/rc0.d/K01netexy
+cd /etc/rc0.d
+ln -s ../init.d/netexy K01netexy
+rm -f /etc/rc2.d/S01netexy
+cd /etc/rc2.d
+ln -s ../init.d/netexy S01netexy
+rm -f /etc/rc4.d/S01netexy
+cd /etc/rc4.d
+ln -s ../init.d/netexy S01netexy
+rm -f /etc/rc5.d/S01netexy
+cd /etc/rc5.d
+ln -s ../init.d/netexy S01netexy
+rm -f /etc/rc6.d/K01netexy
+cd /etc/rc6.d
+ln -s ../init.d/netexy K01netexy
+sync
+cd /
+echo 'Updating irqbalance configuration'
+cp -raf /kaleao/kmax-utils/irqbalance /etc/default/
+sync
+echo 'Done.'

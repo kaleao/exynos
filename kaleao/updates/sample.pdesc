@@ -1,0 +1,28 @@
+PKG_NAME="The name"
+PKG_VERSION="0.0-1"
+PKG_DEPENDS="pkg dependencies"
+PKG_MAINTAINER="Kaleao System SW Team <kaleao@kaleao.com>"
+PKG_DESC="My packe description"
+
+PKG_POSTINSTCMD="\
+#!/bin/sh\n\
+#script to be executed after the installation\n\
+echo 'Hello World!'\n\
+"
+
+PKG_PRERM="\
+#!/bin/sh\n\
+#script to be executed before removal\n\
+echo 'Goodbye World!'\n\
+"
+
+SRC_FILES=(
+"file1_local"
+"file2_local"
+)
+
+DST_FILES=(
+"file1_target"
+"file2_target"
+)
+

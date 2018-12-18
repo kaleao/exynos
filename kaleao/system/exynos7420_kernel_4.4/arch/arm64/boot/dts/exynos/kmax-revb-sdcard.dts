@@ -1,0 +1,42 @@
+/*
+ * Howchip board device tree source
+ *
+ * Copyright (c) 2016 ICS-FORTH, Crete, Greece
+ *		http://ics.forth.gr
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+*/
+
+/dts-v1/;
+#include "kmax-revb.dtsi"
+/ {
+	chosen {
+		bootargs = "root=/dev/ram0 rw rootwait clk_ignore_unused console=ttySAC0,115200n8";
+	};
+
+
+};
+
+&kgexnica {
+        status = "disabled";
+};
+
+
+&kgexnicc {
+        status = "disabled";
+};
+
+&knet {
+        status = "disabled";
+};
+
+&pcie0 {
+        status = "disabled";
+};
+
+&pcie1 {
+        status = "disabled";
+};
+

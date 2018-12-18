@@ -1,0 +1,17 @@
+#!/bin/sh
+echo 'Mounting /dev/sda3...'
+umount /mnt &> /dev/null
+mount /dev/sda3 /mnt/
+echo 'Removing runlevel init scripts...'
+rm -f /mnt/etc/rc0.d/K01netexy
+rm -f /mnt/etc/rc2.d/S01netexy
+rm -f /mnt/etc/rc4.d/S01netexy
+rm -f /mnt/etc/rc5.d/S01netexy
+rm -f /mnt/etc/rc6.d/K01netexy
+echo 'Removing services...'
+rm -f /mnt/etc/init.d/netexy
+sync
+echo 'Unmounting /dev/sda3...'
+umount /mnt
+echo 'Package Removed!'
+
